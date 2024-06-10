@@ -112,23 +112,7 @@ func ExtractAuthors(document *html.Node, jsonLD map[string]interface{}) []string
 		authorList = append(authorList, authorName)
 	}
 
-	// remove duplicates, blanks
-	seen := make(map[string]bool)
-	var result []string
-
-	for _, author := range authorList {
-		cleanedAuthor := strings.ToLower(strings.TrimSpace(author))
-		if cleanedAuthor == "" {
-			continue
-		}
-
-		if !seen[cleanedAuthor] {
-			seen[cleanedAuthor] = true
-			result = append(result, strings.TrimSpace(author))
-		}
-	}
-
-	return result
+	return utils.RemoveDuplicates(authorList)
 }
 
 func ExtractDescription(document *html.Node, jsonLD map[string]interface{}) string {
@@ -230,7 +214,23 @@ func ExtractImage(document *html.Node, jsonLD map[string]interface{}) string {
 
 func ExtractKeywords(document *html.Node, jsonLD map[string]interface{}) []string {
 	var keywords []string
-	return keywords
+
+	metaXpaths := []string{
+		"//meta[@name='keywords']/@content",
+		"//meta[@name='keyword']/@content",
+	}
+	for _, xpath := range metaXpaths {
+		for _, match := range htmlquery.Find(document, xpath) {
+			values := strings.Split(htmlquery.InnerText(match), ",")
+			for _, keyword := range values {
+				if len(strings.TrimSpace(keyword)) > 1 {
+					keywords = append(keywords, strings.TrimSpace(keyword))
+				}
+			}
+		}
+	}
+
+	return utils.RemoveDuplicates(keywords)
 }
 
 func ExtractRawHTML(response *http.Response) string {

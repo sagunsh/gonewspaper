@@ -104,3 +104,22 @@ func ExtractLDJson(document *html.Node) (map[string]interface{}, bool) {
 
 	return nil, false
 }
+
+func RemoveDuplicates(values []string) []string {
+	// remove case-insensitive duplicates, blanks
+	seen := make(map[string]bool)
+	var result []string
+
+	for _, val := range values {
+		cleanedAuthor := strings.ToLower(strings.TrimSpace(val))
+		if cleanedAuthor == "" {
+			continue
+		}
+
+		if !seen[cleanedAuthor] {
+			seen[cleanedAuthor] = true
+			result = append(result, strings.TrimSpace(val))
+		}
+	}
+	return result
+}
