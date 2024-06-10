@@ -229,8 +229,7 @@ func ExtractKeywords(document *html.Node, jsonLD map[string]interface{}) []strin
 			}
 		}
 	}
-
-	return utils.RemoveDuplicates(keywords)
+	return utils.RemoveStopWords(utils.RemoveDuplicates(keywords))
 }
 
 func ExtractRawHTML(response *http.Response) string {
