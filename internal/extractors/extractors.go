@@ -132,6 +132,25 @@ func ExtractAuthors(document *html.Node, jsonLD map[string]interface{}) []string
 }
 
 func ExtractDescription(document *html.Node, jsonLD map[string]interface{}) string {
+	metaXpaths := []string{
+		"//meta[@property='og:description']/@content",
+		"//meta[@name='description']/@content",
+		"//meta[@property='twitter:description']/@content",
+	}
+	for _, xpath := range metaXpaths {
+		for _, match := range htmlquery.Find(document, xpath) {
+			description := strings.TrimSpace(htmlquery.InnerText(match))
+			if description != "" {
+				return description
+			}
+		}
+	}
+
+	if jsonLD != nil {
+		if desc, ok := jsonLD["description"].(string); ok {
+			return strings.TrimSpace(desc)
+		}
+	}
 	return ""
 }
 
