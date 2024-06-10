@@ -65,22 +65,39 @@ func StripTrailing(title string) string {
 }
 
 func ExtractLDJson(document *html.Node) (map[string]interface{}, bool) {
-	// based on https://developers.google.com/search/docs/appearance/structured-data/article#json-ld
+	// https://developers.google.com/search/docs/appearance/structured-data/article#json-ld
 	jsonLDs := htmlquery.Find(document, "//script[@type=\"application/ld+json\"]")
-	var result map[string]interface{}
+
+	var result interface{}
+	var results []interface{}
 
 	for _, jsonLD := range jsonLDs {
-		err := json.Unmarshal([]byte(htmlquery.InnerText(jsonLD)), &result)
-		if err != nil {
-			log.Fatalf("Error parsing JSON: %v", err)
+		if jsonLD == nil {
+			continue
 		}
 
-		if jsonType, ok := result["@type"].(string); ok {
-			if jsonType == "NewsArticle" {
-				return result, true
+		err := json.Unmarshal([]byte(htmlquery.InnerText(jsonLD)), &result)
+		if err != nil {
+			log.Printf("Error parsing JSON: %v\n", err)
+		}
+
+		// convert single object {...} to a list of single object [{...}]
+		if obj, ok := result.(map[string]interface{}); ok {
+			results = append(results, obj)
+		} else if list, ok := result.([]interface{}); ok {
+			results = list
+		}
+
+		for _, item := range results {
+			if obj, ok := item.(map[string]interface{}); ok {
+				if jsonType, ok := obj["@type"].(string); ok {
+					if jsonType == "NewsArticle" {
+						return obj, true
+					}
+				} else {
+					log.Println("@type not found or not a string")
+				}
 			}
-		} else {
-			fmt.Println("@type not found or not a string")
 		}
 	}
 

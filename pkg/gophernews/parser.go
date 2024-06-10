@@ -7,6 +7,7 @@ import (
 	"github.com/sagunsh/gophernews/internal/utils"
 	"io"
 	"log"
+	"strings"
 )
 
 func ParseArticle(url string) utils.Article {
@@ -16,7 +17,7 @@ func ParseArticle(url string) utils.Article {
 	body, err := io.ReadAll(response.Body)
 	rawHTML := ""
 	if err == nil {
-		rawHTML = string(body)
+		rawHTML = strings.TrimSpace(string(body))
 	}
 
 	document, err := htmlquery.Parse(bytes.NewReader([]byte(rawHTML)))
@@ -25,9 +26,6 @@ func ParseArticle(url string) utils.Article {
 	}
 
 	ldJson, _ := utils.ExtractLDJson(document)
-	//if ldJson != nil {
-	//	fmt.Println(ldJson)
-	//}
 
 	article := utils.Article{}
 	article.Title = utils.StripTrailing(extractors.ExtractTitle(document, ldJson))

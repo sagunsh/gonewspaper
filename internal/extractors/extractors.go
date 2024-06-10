@@ -86,11 +86,49 @@ func ExtractAuthors(document *html.Node, jsonLD map[string]interface{}) []string
 		}
 	}
 
-	if len(authorList) > 0 {
-		return authorList
+	metaXpaths := []string{"//meta[@property='article:author']/@content", "//meta[@name='author']/@content"}
+	for _, xpath := range metaXpaths {
+		for _, match := range htmlquery.Find(document, xpath) {
+			author := htmlquery.InnerText(match)
+			authorList = append(authorList, author)
+		}
 	}
 
-	return authorList
+	htmlXpaths := []string{
+		"//*[contains(@class, 'author')]",
+		"//*[contains(@id, 'author')]",
+		"//*[contains(@rel, 'author')]",
+	}
+	for _, xpath := range htmlXpaths {
+		for _, match := range htmlquery.Find(document, xpath) {
+			author := strings.TrimSpace(htmlquery.InnerText(match))
+			author = strings.TrimSpace(strings.TrimPrefix(author, "By"))
+			authorList = append(authorList, author)
+		}
+	}
+
+	for _, link := range htmlquery.Find(document, "//a[contains(@href, '/author/')]") {
+		authorName := htmlquery.InnerText(link)
+		authorList = append(authorList, authorName)
+	}
+
+	// remove duplicates, blanks
+	seen := make(map[string]bool)
+	var result []string
+
+	for _, author := range authorList {
+		cleanedAuthor := strings.ToLower(strings.TrimSpace(author))
+		if cleanedAuthor == "" {
+			continue
+		}
+
+		if !seen[cleanedAuthor] {
+			seen[cleanedAuthor] = true
+			result = append(result, strings.TrimSpace(author))
+		}
+	}
+
+	return result
 }
 
 func ExtractDescription(document *html.Node, jsonLD map[string]interface{}) string {
