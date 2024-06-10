@@ -159,7 +159,6 @@ func ExtractFullText(document *html.Node, jsonLD map[string]interface{}) string 
 }
 
 func ExtractPublishedDate(document *html.Node, jsonLD map[string]interface{}) string {
-	// check in meta tag, <time datetime"..."> and ld+json datePublished
 	dateXpaths := []string{"//meta[@property='article:published_time']/@content", "//time/@datetime"}
 	for _, xpath := range dateXpaths {
 		date := htmlquery.FindOne(document, xpath)
@@ -182,6 +181,50 @@ func ExtractPublishedDate(document *html.Node, jsonLD map[string]interface{}) st
 }
 
 func ExtractImage(document *html.Node, jsonLD map[string]interface{}) string {
+	metaXpaths := []string{
+		"//meta[@property='og:image']/@content",
+		"//meta[@property='twitter:image']/@content",
+	}
+	for _, xpath := range metaXpaths {
+		for _, match := range htmlquery.Find(document, xpath) {
+			description := strings.TrimSpace(htmlquery.InnerText(match))
+			if description != "" {
+				return description
+			}
+		}
+	}
+
+	if jsonLD != nil {
+		if desc, ok := jsonLD["image"].(string); ok {
+			return strings.TrimSpace(desc)
+		}
+	}
+
+	if jsonLD != nil {
+		// "image": "<image url>"
+		if url, ok := jsonLD["image"].(string); ok {
+			return url
+		}
+
+		// "image": "[{"url": "<image url 1>"}, {"url": "<image url 2>"}]"
+		if images, ok := jsonLD["image"].([]interface{}); ok {
+			if len(images) > 0 {
+				if image, ok := images[0].(map[string]interface{}); ok {
+					if url, ok := image["url"].(string); ok {
+						return url
+					}
+				}
+			}
+		}
+
+		// "image": "{"url": "<image url>"}"
+		if image, ok := jsonLD["image"].(map[string]interface{}); ok {
+			if url, ok := image["url"].(string); ok {
+				return url
+			}
+		}
+	}
+
 	return ""
 }
 

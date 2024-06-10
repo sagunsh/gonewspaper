@@ -25,8 +25,8 @@ type Article struct {
 	RawHTML       string   `json:"raw_html"`
 }
 
-func IsValidDate(date_str string) bool {
-	match, err := regexp.MatchString("\\d{4}-\\d{1,2}-\\d{1,2}", date_str)
+func IsValidDate(dateStr string) bool {
+	match, err := regexp.MatchString("\\d{4}-\\d{1,2}-\\d{1,2}", dateStr)
 	if err != nil {
 		return false
 	}
