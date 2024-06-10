@@ -10,6 +10,7 @@ import (
 	"net/http/cookiejar"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type Article struct {
@@ -32,13 +33,13 @@ func IsValidDate(date_str string) bool {
 	return match
 }
 
-func ScrapeContent(url string) *http.Response {
+func ScrapeContent(url string, timeoutSeconds time.Duration) *http.Response {
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 	}
 	j, _ := cookiejar.New(nil)
-	client := &http.Client{Jar: j}
+	client := &http.Client{Jar: j, Timeout: timeoutSeconds}
 	response, err := client.Do(request)
 	if err != nil {
 		log.Fatalf("Failed to scrape %s", url)

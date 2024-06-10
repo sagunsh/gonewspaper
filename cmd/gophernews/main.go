@@ -6,6 +6,7 @@ import (
 	"github.com/sagunsh/gophernews/pkg/gophernews"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -25,7 +26,8 @@ func main() {
 		}
 	}
 
-	article := gophernews.ParseArticle(url)
+	defaultTimeout := 300 * time.Second
+	article := gophernews.ParseArticle(url, defaultTimeout)
 	// fmt.Println(article)
 	jsonData, err := json.MarshalIndent(article, "", "  ")
 	if err != nil {

@@ -8,10 +8,11 @@ import (
 	"io"
 	"log"
 	"strings"
+	"time"
 )
 
-func ParseArticle(url string) utils.Article {
-	response := utils.ScrapeContent(url)
+func ParseArticle(url string, timeoutSeconds time.Duration) utils.Article {
+	response := utils.ScrapeContent(url, timeoutSeconds)
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
