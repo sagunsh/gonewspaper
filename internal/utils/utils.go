@@ -67,7 +67,7 @@ func StripTrailing(title string) string {
 
 func ExtractLDJson(document *html.Node) (map[string]interface{}, bool) {
 	// https://developers.google.com/search/docs/appearance/structured-data/article#json-ld
-	jsonLDs := htmlquery.Find(document, "//script[@type=\"application/ld+json\"]")
+	jsonLDs := htmlquery.Find(document, "//script[@type='application/ld+json']")
 
 	var result interface{}
 	var results []interface{}
