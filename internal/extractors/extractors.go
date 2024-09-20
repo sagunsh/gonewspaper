@@ -2,7 +2,7 @@ package extractors
 
 import (
 	"github.com/antchfx/htmlquery"
-	"github.com/sagunsh/gophernews/internal/utils"
+	"github.com/sagunsh/gonewspaper/internal/utils"
 	"golang.org/x/net/html"
 	"io"
 	"net/http"

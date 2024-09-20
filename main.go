@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sagunsh/gophernews/pkg/gophernews"
+	"github.com/sagunsh/gonewspaper/pkg/gonewspaper"
 	"log"
 	"os"
 	"time"
@@ -27,7 +27,7 @@ func main() {
 	}
 
 	defaultTimeout := 300 * time.Second
-	article := gophernews.ParseArticle(url, defaultTimeout)
+	article := gonewspaper.ParseArticle(url, defaultTimeout)
 	// fmt.Println(article)
 	jsonData, err := json.MarshalIndent(article, "", "  ")
 	if err != nil {

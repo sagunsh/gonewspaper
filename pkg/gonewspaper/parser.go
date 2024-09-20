@@ -1,10 +1,10 @@
-package gophernews
+package gonewspaper
 
 import (
 	"bytes"
 	"github.com/antchfx/htmlquery"
-	"github.com/sagunsh/gophernews/internal/extractors"
-	"github.com/sagunsh/gophernews/internal/utils"
+	"github.com/sagunsh/gonewspaper/internal/extractors"
+	"github.com/sagunsh/gonewspaper/internal/utils"
 	"io"
 	"log"
 	"strings"

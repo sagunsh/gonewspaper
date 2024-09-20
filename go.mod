@@ -1,4 +1,4 @@
-module github.com/sagunsh/gophernews
+module github.com/sagunsh/gonewspaper
 
 go 1.21.4
 
